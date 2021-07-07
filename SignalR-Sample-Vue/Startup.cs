@@ -34,14 +34,8 @@ namespace SignalR_Sample_Vue
             services.AddControllers();
             services.AddSpaStaticFiles(configuration =>
             {
-                if (Environment.IsDevelopment())
-                {
-                    configuration.RootPath = "ClientApp";
-                }
-                else
-                {
-                    configuration.RootPath = "ClientApp/dist";
-                }
+                //静态文件目录 这里RootPath用于提供生产环境的spa工作目录
+                configuration.RootPath = "ClientApp/dist";
             });
 
             services.AddSignalR();
@@ -55,8 +49,14 @@ namespace SignalR_Sample_Vue
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseStaticFiles();
+            if (!env.IsDevelopment())
+            {
+                app.UseSpaStaticFiles();
+            }
+
             app.UseRouting();
-            app.UseSpaStaticFiles();
+
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
@@ -68,16 +68,13 @@ namespace SignalR_Sample_Vue
 
             app.UseSpa(spa =>
             {
-                if (env.IsDevelopment())
-                    spa.Options.SourcePath = "ClientApp";
-                else
-                    spa.Options.SourcePath = "dist";
+                //SourcePath Spa项目的工作目录 用于在此目录执行npm相关命令 开发时使用 
+                spa.Options.SourcePath = "ClientApp";
 
                 if (env.IsDevelopment())
                 {
                     spa.UseVueCli(npmScript: "serve");
                 }
-
             });
         }
     }
